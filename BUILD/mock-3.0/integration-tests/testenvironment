@@ -1,0 +1,22 @@
+TESTDIR=$(cd $(dirname $0); pwd; cd ..)
+TOPDIR=$(dirname $TESTDIR)
+MOCKSRPM=$( (cd $TOPDIR; tito build --srpm --offline |grep Wrote | grep src.rpm | awk '{ print $2}' ))
+SIMPLESRPM=$TESTDIR/test-C-1.1-0.src.rpm
+
+#VERBOSE=
+VERBOSE=--verbose
+
+#
+# most tests below will use this mock command line
+#
+testConfig=fedora-35-x86_64
+uniqueext="$$-$RANDOM"
+outdir=${TOPDIR}/mock-unit-test
+cfgdir=${TOPDIR}/../mock-core-configs/etc/mock
+#MOCKCMD="sudo ./py/mock.py $VERBOSE --resultdir=$outdir --uniqueext=$uniqueext --configdir=$cfgdir -r $testConfig --plugin-option=root_cache:age_check=False $MOCK_EXTRA_ARGS"
+MOCKCMD_NO_RESULTDIR="mock $VERBOSE --uniqueext=$uniqueext --configdir=$cfgdir -r $testConfig $MOCK_EXTRA_ARGS"
+MOCKCMD="$MOCKCMD_NO_RESULTDIR --resultdir=$outdir"
+MOCKCHAIN="mock $VERBOSE --chain --configdir=$cfgdir -r $testConfig $MOCK_EXTRA_ARGS"
+CHROOT=/var/lib/mock/${testConfig}-$uniqueext/root
+
+export MOCKSRPM TOPDIR TESTDIR testConfig uniqueext outdir MOCKCMD MOCKCMD_NO_RESULTDIR CHROOT VERBOSE MOCKCHAIN SIMPLESRPM

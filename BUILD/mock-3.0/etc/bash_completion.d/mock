@@ -1,0 +1,133 @@
+# bash >= 3 completion for mock(1)
+
+_mock_root()
+{
+    test $# -eq 0 && set -- /etc/mock "$HOME/.config/mock"
+
+    local suggest=$(
+      shopt -s nullglob
+      for dir in "$@"; do
+         # work with absolute paths!
+         cd "$dir" &>/dev/null || continue
+         for file in *; do
+             case $file in
+             site-defaults*) ;; # skip site defaults
+             *' '*) ;; # skip files with white spaces
+             *.cfg) echo "${file%%.cfg}" ;;
+             esac
+         done
+      done
+    )
+
+    COMPREPLY+=( $( compgen -W "$suggest" -- "$cur" ) )
+    _filedir 'cfg'
+}
+
+_mock()
+{
+    local cur prev words cword split
+    _init_completion -s || return
+
+    local cfgdirs=( /etc/mock "$HOME/.config/mock" )
+    local count=0
+    for word in "${words[@]}" ; do
+        [[ $count -eq $cword ]] && break
+        if [[ "$word" == --configdir ]] ; then
+            cfgdirs=( "${words[((count+1))]}" )
+        elif [[ "$word" == --configdir=* ]] ; then
+            cfgdirs=( ${word/*=/} )
+        fi
+        count=$((++count))
+    done
+
+    case "$prev" in
+        -h|--help|--version)
+            # no further arguments are accepted after the above arguments
+            return
+            ;;
+        --arch|--config-opts|-D|--define|--disablerepo|--enablerepo|--forcearch|--plugin-option|\
+        --rpmbuild-opts|--rpmbuild_timeout|--scm-option|--uniqueext|--with|--without)
+            # argument required but no completions available
+            return
+            ;;
+        -r|--root|--chain)
+            _mock_root "${cfgdirs[@]}"
+            return
+            ;;
+        --configdir|--cwd|--resultdir|--rootdir)
+            _filedir -d
+            return
+            ;;
+        --copyin|--copyout|--macro-file|--sources)
+            _filedir
+            return
+            ;;
+        --spec)
+            _filedir 'spec'
+            return
+            ;;
+        --target)
+            # Yep, compatible archs, not compatible build archs
+            # (e.g. ix86 chroot builds in x86_64 mock host)
+            # This would actually depend on what the target root
+            # can be used to build for...
+            COMPREPLY=( $( compgen -W "$( command rpm --showrc | \
+                sed -ne 's/^\s*compatible\s\s*archs\s*:\s*\(.*\)/\1/i p' )" \
+                -- "$cur" ) )
+            return
+            ;;
+        --enable-plugin|--disable-plugin)
+            COMPREPLY=( $( compgen -W "$( $1 $prev=DOES_NOT_EXIST 2>&1 | \
+                sed -ne "s/[',]//g" -e 's/.*[[(]\([^])]*\)[])]/\1/p' )" \
+                -- "$cur" ) ) #' unconfuse emacs
+            return
+            ;;
+        --scrub)
+            COMPREPLY=( $( compgen -W "all chroot cache root-cache c-cache
+                yum-cache dnf-cache lvm overlayfs bootstrap" -- "$cur" ) )
+            return
+            ;;
+        -i|--install|install)
+            _filedir 'rpm'
+            COMPREPLY=( $( compgen -W '"${COMPREPLY[@]}"' -X '*.src.rpm' ) )
+            COMPREPLY=( $( compgen -W '"${COMPREPLY[@]}"' -X '*.nosrc.rpm' ) )
+            [[ $cur != */* && $cur != [.~]* ]] && \
+                declare -F _yum_list &>/dev/null && _yum_list all "$cur"
+            return
+            ;;
+        --isolation)
+            COMPREPLY=( $( compgen -W "auto simple nspawn" -- "$cur" ) )
+            return
+            ;;
+        --remove|remove)
+            declare -F _yum_list &>/dev/null && _yum_list all "$cur"
+            return
+            ;;
+        --short-circuit)
+            COMPREPLY=( $( compgen -W "install binary build prep" -- "$cur" ) )
+            return
+            ;;
+    esac
+
+    $split && return
+
+    if [[ "$cur" == -* ]] ; then
+        COMPREPLY=( $( compgen -W '$( _parse_help "$1" )' -- "$cur" ) )
+        # _parse_help fails to pick up --define (it's a parsing failure due to
+        # the quoted 'MACRO EXPR' argument)
+        COMPREPLY+=( $( compgen -W '--define=' -- "$cur" ) )
+        [[ $COMPREPLY == *= ]] && compopt -o nospace
+    else
+        _filedir '@(?(no)src.r|s)pm'
+    fi
+
+} &&
+complete -F _mock mock mock.py
+
+# Local variables:
+# mode: shell-script
+# sh-basic-offset: 4
+# sh-indent-comment: t
+# indent-tabs-mode: nil
+# End:
+# ex: ts=4 sw=4 et filetype=sh
