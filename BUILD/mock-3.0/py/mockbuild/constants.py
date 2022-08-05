@@ -6,9 +6,9 @@ import os.path
 import sys
 
 # all of the variables below are substituted by the build system
-VERSION="3.0"
-SYSCONFDIR="/etc"
-PYTHONDIR="/usr/lib/python3.6/site-packages"
-PKGPYTHONDIR="/usr/lib/python3.6/site-packages/mockbuild"
+VERSION = "unreleased_version"
+SYSCONFDIR = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "..", "etc")
+PYTHONDIR = os.path.dirname(os.path.realpath(sys.argv[0]))
+PKGPYTHONDIR = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "mockbuild")
 MOCKCONFDIR = os.path.join(SYSCONFDIR, "mock")
 # end build system subs
