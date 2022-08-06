@@ -12,7 +12,8 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 Mock is a simple program that will build source RPMs inside a chroot. It doesn't do anything fancy other than populating a chroot with the contents specified by a configuration file, then build any input SRPM(s) in that chroot.
 ```
 
-* 官方仓库 : <https://rpm-software-management.github.io/mock/>
+* 官方仓库 : <https://github.com/rpm-software-management/mock/>
+* 官方文档 : <https://rpm-software-management.github.io/mock/>
 
 ## 闪电入门
 
@@ -37,8 +38,10 @@ $ mock -r alma+epel-8-x86_64 package.src.rpm
 * [mock玩耍指南](docs/mock玩耍指南.md)
     * [知己知彼](docs/mock玩耍指南/知己知彼.md)
     * [帮助信息](docs/mock玩耍指南/帮助信息.md)
+    * [玩起来](docs/mock玩耍指南/玩起来.md)
+    * [捕获mock构建执行流](docs/mock玩耍指南/捕获mock构建执行流.md)
     * [入口解析](docs/mock玩耍指南/入口解析.md)
-
+    * [为什么需要bootstrap chroot](docs/mock玩耍指南/为什么需要bootstrap_chroot.md)
 
 
 
