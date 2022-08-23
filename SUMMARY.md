@@ -7,6 +7,7 @@
     * [玩起来](docs/mock玩耍指南/玩起来.md)
     * [捕获mock构建执行流](docs/mock玩耍指南/捕获mock构建执行流.md)
     * [入口解析](docs/mock玩耍指南/入口解析.md)
+    * [consolehelper作用](docs/mock玩耍指南/consolehelper作用.md)
     * [为什么需要bootstrap chroot](docs/mock玩耍指南/为什么需要bootstrap_chroot.md)
     * [如何在不同构建阶段添加hook](docs/mock玩耍指南/如何在不同构建阶段添加hook.md)
 
