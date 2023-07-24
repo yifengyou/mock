@@ -1,4 +1,4 @@
-# mock-3.0玩耍笔记
+# mock-4.1解析笔记
 
 ```
 Something I hope you know before go into the coding~
@@ -19,7 +19,7 @@ Mock is a simple program that will build source RPMs inside a chroot. It doesn't
 ## 闪电入门
 
 ```
-$ mock -r fedora-35-x86_64 package.src.rpm
+$ mock -r rocky-8-x86_64 package.src.rpm
 ...
 Finish: rpmbuild packagei-1.98-1.fc35.src.rpm
 Finish: build phase for package-1.98-1.fc35.src.rpm
